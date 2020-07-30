@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Typography, Button, Form, message, Input, Icon } from "antd";
 import FileUpload from "../../utils/FileUpload";
+import Axios from "axios";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -14,7 +15,7 @@ const Continents = [
   { key: 7, value: "Antarctica" },
 ];
 
-function UploadProductPage() {
+function UploadProductPage(props) {
   const [TitleValue, setTitleValue] = useState("");
   const [Description, setDescription] = useState("");
   const [Price, setPrice] = useState(0);
@@ -41,14 +42,46 @@ function UploadProductPage() {
     setImages(e.currentTarget.value);
   };
 
+  const updateImages = (newImages) => {
+    setImages(newImages);
+  };
+
+  const submitHandler = (e) => {
+    console.log(1);
+    e.preventDefault();
+    if (!TitleValue || !Description || !Price || !Continent || !Images) {
+      return alert("fill all the fields first!");
+    }
+    console.log(2);
+    //서버에 폼 fill한 값 request로 전송하기
+    const body = {
+      writer: props.user.userData._id,
+      title: TitleValue,
+      description: Description,
+      price: Price,
+      images: Images,
+      continents: Continent,
+    };
+
+    //백엔드에서 처리후 then이하 실행
+    Axios.post("/api/product", body).then((res) => {
+      if (res.data.success) {
+        alert("succeeded!");
+        props.history.push("/");
+      } else {
+        alert("failed!");
+      }
+    });
+  };
+
   return (
     <div style={{ maxWidth: "700px", margin: "2rem auto" }}>
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <Title level={2}>여행 상품 업로드</Title>
       </div>
-      <Form>
+      <Form onSubmit={submitHandler}>
         {/* DropZone */}
-        <FileUpload></FileUpload>
+        <FileUpload refreshFunction={updateImages}></FileUpload>
         <br />
         <br />
         <label>Title</label>
@@ -72,7 +105,7 @@ function UploadProductPage() {
         </select>
         <br />
         <br />
-        <Button>Submit</Button>
+        <Button onClick={submitHandler}>Submit</Button>
       </Form>
     </div>
   );
