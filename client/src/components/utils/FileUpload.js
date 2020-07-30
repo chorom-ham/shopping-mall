@@ -14,7 +14,7 @@ function FileUpload(props) {
     axios.post("/api/product/image", formData, config).then((response) => {
       if (response.data.success) {
         setImages([...Images, response.data.filePath]);
-        props.refreshFunction(Images);
+        props.refreshFunction([...Images, response.data.filePath]);
       } else {
         alert("failed");
       }
@@ -26,7 +26,7 @@ function FileUpload(props) {
     let newImages = [...Images];
     newImages.splice(currentIndex, 1);
     setImages(newImages);
-    props.refreshFunction(Images);
+    props.refreshFunction(newImages);
   };
 
   return (

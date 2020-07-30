@@ -38,21 +38,15 @@ function UploadProductPage(props) {
     setContinent(e.currentTarget.value);
   };
 
-  const imagesChangeHandler = (e) => {
-    setImages(e.currentTarget.value);
-  };
-
   const updateImages = (newImages) => {
     setImages(newImages);
   };
 
   const submitHandler = (e) => {
-    console.log(1);
     e.preventDefault();
     if (!TitleValue || !Description || !Price || !Continent || !Images) {
       return alert("fill all the fields first!");
     }
-    console.log(2);
     //서버에 폼 fill한 값 request로 전송하기
     const body = {
       writer: props.user.userData._id,
@@ -62,7 +56,6 @@ function UploadProductPage(props) {
       images: Images,
       continents: Continent,
     };
-
     //백엔드에서 처리후 then이하 실행
     Axios.post("/api/product", body).then((res) => {
       if (res.data.success) {
