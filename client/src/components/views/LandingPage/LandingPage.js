@@ -6,6 +6,7 @@ import ImageSlider from "../../utils/ImageSlider";
 import Checkbox from "./Sections/Checkbox";
 import Radiobox from "./Sections/Radiobox";
 import { continents, price } from "./Sections/Data";
+import SearchFeature from "./Sections/SearchFeature";
 
 const { Meta } = Card;
 
@@ -15,6 +16,7 @@ function LandingPage() {
   const [limit, setLimit] = useState(4);
   const [postSize, setPostSize] = useState();
   const [filters, setFilters] = useState({ continents: [], price: [] });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const getProducts = (body) => {
     axios.post("/api/product/products", body).then((res) => {
@@ -88,6 +90,18 @@ function LandingPage() {
     setFilters(newFilters);
   };
 
+  const updateSearchTerm = (newTerm) => {
+    let body = {
+      skip: 0,
+      limit: limit,
+      filters: filters,
+      searchTerm: newTerm,
+    };
+    getProducts(body);
+    setSkip(0);
+    setSearchTerm(newTerm);
+  };
+
   return (
     <div style={{ width: "75%", margin: "3rem auto" }}>
       <div style={{ textAlign: "center" }}>
@@ -112,6 +126,8 @@ function LandingPage() {
       </Row>
 
       {/* Search  */}
+      <SearchFeature refreshFunction={updateSearchTerm}></SearchFeature>
+
       <Row gutter={[16, 16]}>{renderCards}</Row>
 
       <br />

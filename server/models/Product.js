@@ -39,6 +39,7 @@ const productSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+//검색할 때 아래 것들 중점으로(무게로 가중치)
 productSchema.index(
   {
     title: "text",
