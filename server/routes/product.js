@@ -49,7 +49,15 @@ router.post("/products", (req, res) => {
   let limit = req.body.limit ? parseInt(req.body.limit) : 20;
   let skip = req.body.skip ? parseInt(req.body.skip) : 0;
 
-  Product.find() //product collection안의 모든 정보 찾는 메소드(원하는 조건은 파라미터로)
+  let findArgs = {};
+  for (let key in req.body.filters) {
+    if (req.body.filters[key].length > 0) {
+      //여기서 key == category
+      findArgs[key] = req.body.filters[key];
+    }
+  }
+
+  Product.find(findArgs) //product collection안의 모든 정보 찾는 메소드(원하는 조건은 파라미터로)
     .populate("writer")
     .skip(skip)
     .limit(limit)

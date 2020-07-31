@@ -3,6 +3,8 @@ import { FaCode } from "react-icons/fa";
 import axios from "axios";
 import { Icon, Col, Card, Row } from "antd";
 import ImageSlider from "../../utils/ImageSlider";
+import Checkbox from "./Sections/Checkbox";
+import { continents } from "./Sections/Data";
 
 const { Meta } = Card;
 
@@ -11,6 +13,7 @@ function LandingPage() {
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(4);
   const [postSize, setPostSize] = useState();
+  const [filters, setFilters] = useState({ continents: [], price: [] });
 
   const getProducts = (body) => {
     axios.post("/api/product/products", body).then((res) => {
@@ -53,6 +56,20 @@ function LandingPage() {
     );
   });
 
+  const showFilterResults = (_filters) => {
+    let body = { skip: 0, limit: limit, filters: _filters };
+    getProducts(body);
+    setSkip(0);
+  };
+
+  const handleFilters = (_filters, category) => {
+    const newFilters = { ...filters };
+    newFilters[category] = _filters;
+
+    showFilterResults(newFilters);
+    setFilters(newFilters);
+  };
+
   return (
     <div style={{ width: "75%", margin: "3rem auto" }}>
       <div style={{ textAlign: "center" }}>
@@ -61,6 +78,12 @@ function LandingPage() {
         </h2>
       </div>
       {/* Filter  */}
+
+      <Checkbox
+        list={continents}
+        handleFilters={(Filters) => handleFilters(Filters, "continents")}
+      ></Checkbox>
+
       {/* Search  */}
       <Row gutter={[16, 16]}>{renderCards}</Row>
 
