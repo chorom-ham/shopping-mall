@@ -46,9 +46,13 @@ router.post("/", (req, res) => {
 
 //product collection의 모든 상품 정보 가져오기
 router.post("/products", (req, res) => {
-  //product collection안의 모든 정보 찾는 메소드(원하는 조건은 파라미터로)
-  Product.find()
+  let limit = req.body.limit ? parseInt(req.body.limit) : 20;
+  let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
+  Product.find() //product collection안의 모든 정보 찾는 메소드(원하는 조건은 파라미터로)
     .populate("writer")
+    .skip(skip)
+    .limit(limit)
     .exec((err, productInfo) => {
       if (err) {
         return res.status(400).json({ success: false, err });
@@ -56,6 +60,7 @@ router.post("/products", (req, res) => {
       return res.status(200).json({
         success: true,
         productInfo,
+        postSize: productInfo.length,
       });
     });
 });
