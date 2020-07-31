@@ -4,7 +4,8 @@ import axios from "axios";
 import { Icon, Col, Card, Row } from "antd";
 import ImageSlider from "../../utils/ImageSlider";
 import Checkbox from "./Sections/Checkbox";
-import { continents } from "./Sections/Data";
+import Radiobox from "./Sections/Radiobox";
+import { continents, price } from "./Sections/Data";
 
 const { Meta } = Card;
 
@@ -62,9 +63,26 @@ function LandingPage() {
     setSkip(0);
   };
 
+  const handlePrice = (value) => {
+    const data = price;
+    let arr = [];
+    for (let key in data) {
+      //key는 가격 배열의 인덱스
+      if (data[key]._id === parseInt(value, 10)) {
+        arr = data[key].array;
+      }
+    }
+    return arr;
+  };
+
   const handleFilters = (_filters, category) => {
     const newFilters = { ...filters };
     newFilters[category] = _filters;
+
+    if (category === "price") {
+      let priceValues = handlePrice(_filters);
+      newFilters[category] = priceValues;
+    }
 
     showFilterResults(newFilters);
     setFilters(newFilters);
@@ -78,11 +96,20 @@ function LandingPage() {
         </h2>
       </div>
       {/* Filter  */}
-
-      <Checkbox
-        list={continents}
-        handleFilters={(Filters) => handleFilters(Filters, "continents")}
-      ></Checkbox>
+      <Row gutter={[16, 16]}>
+        <Col lg={12} xs={24}>
+          <Checkbox
+            list={continents}
+            handleFilters={(Filters) => handleFilters(Filters, "continents")}
+          ></Checkbox>
+        </Col>
+        <Col lg={12} xs={24}>
+          <Radiobox
+            list={price}
+            handleFilters={(Filters) => handleFilters(Filters, "price")}
+          ></Radiobox>
+        </Col>
+      </Row>
 
       {/* Search  */}
       <Row gutter={[16, 16]}>{renderCards}</Row>
