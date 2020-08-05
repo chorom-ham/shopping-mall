@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import Axios from "axios";
 import { Row, Col } from "antd";
 import ProductImage from "./Sections/ProductImage";
 import ProductInfo from "./Sections/ProductInfo";
 
 function DetailProductPage(props) {
   const productId = props.match.params.productId;
-  const [Product, setProduct] = useState({});
+  const [Product, setProduct] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`api/product/products_by_id?id=${productId}&type=single`)
-      .then((response) => {
+    Axios.get(`/api/product/products_by_id?id=${productId}&type=single`).then(
+      (response) => {
         if (response.data.success) {
-          setProduct(response.data[0]);
-        } else {
+          setProduct(response.data.product[0]);
         }
-      });
+      }
+    );
   }, []);
 
   return (

@@ -30,7 +30,7 @@ function App() {
           />
           <Route
             exact
-            path="/product/:productID"
+            path="/product/:productId"
             component={Auth(DetailProductPage, true)}
           />
         </Switch>
