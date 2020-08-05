@@ -99,4 +99,20 @@ router.post("/products", (req, res) => {
   }
 });
 
+router.get("/products_by_id", (req, res) => {
+  //쿼리스트링은 req.query로 값 가져옴
+  let type = req.query.type;
+  let productId = req.query.id;
+
+  //get방식은 뒤에 json이 아니라 send로 답 보내줌
+  Product.find({ _id: productId })
+    .populate("writer")
+    .exec((err, product) => {
+      if (err) {
+        return res.status(400).send(err);
+      }
+      return res.status(200).send({ success: true, product });
+    });
+});
+
 module.exports = router;
