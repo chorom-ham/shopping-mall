@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/User");
-
 const { auth } = require("../middleware/auth");
 
 //=================================
@@ -18,6 +17,8 @@ router.get("/auth", auth, (req, res) => {
     lastname: req.user.lastname,
     role: req.user.role,
     image: req.user.image,
+    cart: req.user.cart,
+    history: req.user.history,
   });
 });
 
@@ -69,44 +70,49 @@ router.get("/logout", auth, (req, res) => {
   );
 });
 
-router.get("/addToCart", auth, (req, res) => {
+router.post("/addToCart", auth, (req, res) => {
   //아래처럼 유저 아이디 들고 올 수 있는 이유? auth 미들웨어 덕분(쿠키로 유저 정보 저장)
   //auth 미들웨어를 통과하는 순간 req.id에 유저 정보 담김
+  //먼저  User Collection에 해당 유저의 정보를 가져오기
   User.findOne({ _id: req.user._id }, (err, userInfo) => {
-    //가져 온 정보에서 카트에 추가하려는 상품이 이미 카트에 있는 지 확인
-    //있으면 개수만 추가
+    // 가져온 정보에서 카트에다 넣으려 하는 상품이 이미 들어 있는지 확인
+
     let duplicate = false;
     userInfo.cart.forEach((item) => {
       if (item.id === req.body.productId) {
         duplicate = true;
       }
     });
+
+    //상품이 이미 있을때
     if (duplicate) {
-      User.findByIdAndUpdate(
+      User.findOneAndUpdate(
         { _id: req.user._id, "cart.id": req.body.productId },
         { $inc: { "cart.$.quantity": 1 } },
-        { new: true }, //업데이트 된 정보의 결과값을 받으려면 new: true 옵션 줘야함
+        { new: true },
         (err, userInfo) => {
-          if (err) return res.json({ success: false, err });
-          return res.status(200).send(userInfo.cart);
+          if (err) return res.status(200).json({ success: false, err });
+          res.status(200).send(userInfo.cart);
         }
       );
-    } else {
-      User.findByIdAndUpdate(
+    }
+    //상품이 이미 있지 않을때
+    else {
+      User.findOneAndUpdate(
         { _id: req.user._id },
         {
           $push: {
             cart: {
-              id: req.query.productId,
+              id: req.body.productId,
               quantity: 1,
               date: Date.now(),
             },
           },
         },
-        { new: true }, //업데이트 된 정보의 결과값을 받으려면 new: true 옵션 줘야함
+        { new: true },
         (err, userInfo) => {
-          if (err) return res.json({ success: false, err });
-          return res.status(200).send(userInfo.cart);
+          if (err) return res.status(400).json({ success: false, err });
+          res.status(200).send(userInfo.cart);
         }
       );
     }

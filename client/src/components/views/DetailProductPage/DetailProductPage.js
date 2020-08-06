@@ -9,15 +9,12 @@ function DetailProductPage(props) {
   const [Product, setProduct] = useState([]);
 
   useEffect(() => {
-    Axios.get(`/api/product/products_by_id?id=${productId}&type=single`).then(
-      (response) => {
-        if (response.data.success) {
-          setProduct(response.data.product[0]);
-        }
-      }
-    );
+    Axios.get(`/api/product/products_by_id?id=${productId}&type=single`)
+      .then((response) => {
+        setProduct(response.data[0]);
+      })
+      .catch((err) => alert(err));
   }, []);
-
   return (
     <div className="postPage" style={{ width: "100%", padding: "3rem 4rem" }}>
       <div style={{ display: "flex", justifyContent: "center" }}>
